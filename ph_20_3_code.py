@@ -385,3 +385,6 @@ def phase_plot(h, x0, v0, Tmax, approx_type, filename):
     plt.legend(loc="upper left")
     plt.savefig(filename)
     plt.show()
+
+
+# Another comment for git version control.
