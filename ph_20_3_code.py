@@ -1,5 +1,5 @@
 # Physics 20 Set 3 Functions
-
+# comment added for git version control
 # Import the necessary packages.
 import numpy as np
 import matplotlib.pyplot as plt
