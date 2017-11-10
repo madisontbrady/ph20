@@ -1,0 +1,306 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage{amsmath}
+\usepackage[margin=1in]{geometry} 
+\usepackage{amsmath,amsthm,amssymb,amsfonts}
+ 
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+ 
+\newenvironment{question}[2][Question]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+%If you want to title your bold things something different just make another thing exactly like this but replace "problem" with the name of the thing you want, like theorem or lemma or whatever
+ 
+\usepackage{graphicx}
+
+\usepackage{subcaption}
+ 
+\title{Physics 20 Set 3}
+\author{Madison Brady}
+\date{October 2017}
+
+\begin{document}
+
+\maketitle
+
+\section{Numerically Plotting the Motion of A Mass on a Spring}
+
+Using the explicit Euler method, we can numerically recreate the displacement and velocity equations that describe the motion of a spring.  Starting at an initial velocity $v_0$ and displacement $x_0$, we can recursively define the displacement and velocity on a point-by-point basis.  For some small $h$, the following equations hold:
+
+\begin{equation}
+    x_{i + 1} \approx x_i + h v_i, ~~~
+    v_{i + 1} \approx v_i - h x_i
+\end{equation}
+
+Thus, the old position and velocity are used to compute the new velocity and position.
+
+We produced a \texttt{python} function which used the explicit Euler method to calculate $x(t)$ and $v(t)$ with initial displacement $x_0$ and velocity $v_0$ over a defined range of $t$ from $0$ to some upper limit $t_{max}$.
+
+Figure~\ref{fig:exp_num_spring} shows the results of this function.  With a constant $h$ and $t_{max}$, we plotted the functions with varying sets of starting parameters.  It is clear that the plots of $x$ and $v$ follow the same trends, but with some phase shift of about $\frac{\pi}{2}$.  In addition, the amplitudes of both plots increase with time.
+
+The starting conditions appear to have an impact on the amplitude of the curve, as well as the phase of the curve.  The starting amplitude is related to $v_0$ and $x_0$ added in quadrature.  In addition, no motion occurs in the system if both the initial displacement and velocity are zero.  This makes sense physically, as an undisturbed spring would also experience no motion.
+
+\begin{figure}
+\centering
+\begin{subfigure}{.65\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{xv_exp_0_0_20.png}
+  \caption{$x_0 = 0, v_0 = 0$}
+  \label{fig:sfig1}
+\end{subfigure}
+\begin{subfigure}{.65\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{xv_exp_1_0_20.png}
+  \caption{$x_0 = 1, v_0 = 0$}
+  \label{fig:sfig2}
+\end{subfigure}
+\begin{subfigure}{.65\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{xv_exp_0_1_20.png}
+  \caption{$x_0 = 0, v_0 = 1$}
+  \label{fig:sfig3}
+\end{subfigure}%
+\caption{Plots of $t$ vs $x$ and $v$ for several different sets of starting conditions using explicit Euler methods.  For the sake of uniformity, we defined $h = 0.1$ and $t_{max} = 20$.  These parameters allowed us to clearly see several oscillations of the system.  \textbf{(a)} shows the case in which both of the initial conditions are $0$.  The system experiences no motion.  \textbf{(b)} shows the case in which there is an initial displacement but no initial velocity.  The displacement starts at $x(t) = x_0$ and begins oscillating from this peak, while velocity starts at $0$ and begins oscillating like $\cos(t)$ from this point.  \textbf{(c)} shows the case in which the initial velocity is nonzero but the position is.  The velocity begins at $v(t) = 1$ and oscillates as a cosine function from this point, while the $x$ begins at zero and oscillates as a sine function.}
+\label{fig:exp_num_spring}
+\end{figure}
+
+\section{The Analytic Solution to the Spring Motion Problem}
+
+To explore the errors of Euler's methods, we must first find the absolute, analytical formulae of $x(t)$ and $v(t)$ for the motion of a spring.
+
+We know that the force of a mass on a spring can be described as such:
+
+\begin{equation}
+    F = ma = -kx
+\end{equation}
+
+Where $F$ is the force, $m$ is the mass of the spring, and $k$ is the spring constant, $x$ is the displacement of the mass from equilibrium, and $a$ is the acceleration of the mass.  We know that $a$ is the second derivative of the mass displacement with respect to the time $t$, so we may re-arrange this equation as such:
+
+\begin{eqnarray}
+    m\frac{d^2x}{dt^2} =& -kx \\
+    \frac{d^2x}{dt^2} =& -\frac{k}{m}x \\
+    0 =& \frac{d^2x}{dt^2} + \frac{k}{m}x
+\end{eqnarray}
+
+This is a differential equation we can use to solve for $x(t)$, the displacement of the mass, with the initial conditions initial displacement $x(0) = x_0$ and initial velocity $v(0) = v_0$.
+
+First, let's guess a solution to this differential equation of the form $x(t) = Ae^{\beta t}$, where $A$ is a constant and $\beta$ is some real or imaginary value.
+
+\begin{eqnarray}
+    0 =& \frac{d^2x}{dt^2} + \frac{k}{m}x \\
+    0 =& \beta^2 Ae^{\beta t} + \frac{k}{m} Ae^{\beta t} \\
+    0 =& \beta^2 + \frac{k}{m} \\
+    \beta =& \pm \sqrt{\frac{k}{m}}i
+\end{eqnarray}
+
+Thus, we have two general solutions.  As this is a second-order differential equation, we may express our final solution, $x(t)$, as a superposition of the real portions (the imaginary solutions do not describe physical motion) of these two general solutions, each multiplied by some constants $A_+$ and $A_-$ dictated by our initial conditions.  
+
+\begin{eqnarray}
+    x(t) = Re\Big(A_+e^{\sqrt{\frac{k}{m}}i t} + A_-e^{-\sqrt{\frac{k}{m}}i t}\Big)
+\end{eqnarray}
+
+We may re-express these imaginary exponentials as trigonometric functions and they use this information to find the real value of $x(t)$.
+
+\begin{eqnarray}
+    x(t) =& Re\Big(A_+e^{\sqrt{\frac{k}{m}}i t} + A_-e^{-\sqrt{\frac{k}{m}}i t}\Big) \\
+    x(t) =& Re\Big(A_+\big(\cos{{\sqrt{\frac{k}{m}}t} +  i\sin{\sqrt{\frac{k}{m}}t}}\big) + A_-\big(\cos{{\sqrt{\frac{k}{m}}t} -  i\sin{\sqrt{\frac{k}{m}}t}}\big)\Big) \\
+    x(t) =& A_+\cos{{\sqrt{\frac{k}{m}}t} + A_-\sin{\sqrt{\frac{k}{m}}t}}
+\end{eqnarray}
+
+Now, with our knowledge of initial conditions, we can solve for $A_+$.
+
+\begin{eqnarray}
+    x(0) =& A_+\cos{{\sqrt{\frac{k}{m}}t} + A_-\sin{\sqrt{\frac{k}{m}}t}} \\
+    x_0 =& A_+\cos{{\sqrt{\frac{k}{m}}(0)} + A_-\sin{\sqrt{\frac{k}{m}}(0)}} \\
+    x_0 =& A_+(1) \\
+    A_+ =& x_0
+\end{eqnarray}
+
+Now, we can take the derivative of $x(t)$ with respect to time to find the velocity $v(0)$, which will allow us to solve for $A_-$ knowing that $\sqrt{\frac{k}{m}} = 0$ in this problem.
+
+\begin{eqnarray}
+    x(t) =& A_+\cos{{\sqrt{\frac{k}{m}}t} + A_-\sin{\sqrt{\frac{k}{m}}t}} \\
+    v(t) =& -\sqrt{\frac{k}{m}} * A_+\sin{{\sqrt{\frac{k}{m}}(t)} + \sqrt{\frac{k}{m}} * A_-\cos{\sqrt{\frac{k}{m}}(t)}} \\
+    v(0) =& -\sqrt{\frac{k}{m}} * A_+\sin{{\sqrt{\frac{k}{m}}(0)} + \sqrt{\frac{k}{m}} * A_-\cos{\sqrt{\frac{k}{m}}(0)}} \\
+    v_0 =& \sqrt{\frac{k}{m}} * A_-\\
+    A_- =& \frac{i}{\sqrt{\frac{k}{m}}} v_0 \\
+    A_- =& (1) v_0 \\
+    A_- =& v_0
+\end{eqnarray}
+
+\section{Comparing The Numerical and Analytical Solutions}
+
+Using \texttt{python}, we can code a simple program that generates $v(t)$ and $x(t)$ for the same range of $t$ as described in our explicit Euler's method solutions.  We can examine the evolution of the error of Euler's method by graphing the difference between the analytical solution and the approximation with respect to $t$, as shown in Figure~\ref{fig:err_exp}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.8\textwidth]{er_exp_0_1_100.png}{}
+    \caption{Plot of the error of $v$ and $x$ calculated with the explicit Euler's method versus the actual analytic solution.  This plot was generated with $h = 0.1$ and $t_{max} = 100$.  The error of both $v$ and $x$ increases at a nonlinear rate as $t$ increases.}
+    \label{fig:err_exp}
+\end{figure}
+
+From this figure, it is clear that the error inherent in using the explicit Euler's method blows up as $t$ increases.  This can be inferred from the charts in Figure~\ref{fig:exp_num_spring}, which showed the amplitude increasing over time.  An actual spring's motion is described by the addition of a sine and cosine function whose amplitudes remain constant over time.  Thus, this increase in error is likely tied to the increase in amplitude over time of the explicit function compared to the analytic function.
+
+This error is somewhat related to our chosen value for $h$.  Using our \texttt{python} functions for the explicit and analytic solutions of $x(t)$ and $v(t)$, we varied $h$ and investigated its effects on the global error, which we calculated as the maximum value of $x_{analytic}(t_i) - x_i$ over the interval.  Our results are shown in Figure~\ref{fig:err_h}.
+
+From this plot, we see that the explicit error appears to have a first-order relationship with $h$ for small values of $h$ and $t$.   This makes sense logically- a smaller $h$ means a finer approximation over more points over the interval, resulting in a more accurate approximation of the true value of $x(t)$ and $v(t)$. 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.8\textwidth]{he_exp_0_1_20.png}{}
+    \caption{Plot of the max error of Euler's method in $x$ over the interval $t \in [0, ~t_{max} = 10]$ with relationship to $h$, the step-size in our numerical function.  The maximum error appears to have a positive linear relationship with $h$.}
+    \label{fig:err_h}
+\end{figure}
+
+
+\section{The Numerical Evolution of Energy}
+
+In a real mass-spring system, the total energy, $E = x^2 + v^2$, is meant to remain invariant as the system evolves.  Using our \texttt{python} methods, we can investigate how our Euler approximations compare.
+
+Figure~\ref{fig:exp_energy} shows how the Euler approximation's calculated energy values vary with time, with the actual energy value added to the plot for scale.  The energy (and error in energy) for the approximation blows up as $t$ increases.  This makes sense from our previous observation that the amplitudes in our explicit $x$ and $t$ approximations also blow up with time.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.8\textwidth]{en_exp_0_1_20.png}{}
+    \caption{Plot of the calculated $E = x^x + v^2$ of the explicit Euler's method versus the actual analytical $E$ value with time.  Over time, the energy associated with the Euler approximation blows up while the analytically derived energy remains constant.  For the sake of generating these plots, we allowed $x_0 = 0$, $v_0 = 1$, $h = 0.1$, and $t_{max} = 20$.}
+    \label{fig:exp_energy}
+\end{figure}
+
+\section{The Implicit Euler Method}
+
+After performing these calculations with the explicit Euler method, we now seek to quantify the error inherent in using the implicit Euler method.
+
+Equation (9) in the problem set performs a numerical update of the values of $x_i$ and $v_i$ using this linear system:
+
+\[
+  \begin{bmatrix}
+    1 & -h \\
+    h & 1 
+  \end{bmatrix}
+  *
+  \begin{bmatrix}
+  x_{i + 1} \\
+  v_{i + 1}
+  \end{bmatrix}
+  =
+  \begin{bmatrix}
+  x_i \\
+  v_i
+  \end{bmatrix}
+\]
+
+In order to derive a system of equations for the implicit Euler method, we will solve this system in order to derive equations for $v_{i + 1}$ and $x_{i + 1}$ in terms of $v_i$ and $x_i$.
+
+Performing matrix multiplication yields us...
+
+\begin{eqnarray}
+    x_i = x_{i + 1} - hv_{i + 1} \\
+    v_i = hx_{i + 1} + v_{i + 1} \\
+\end{eqnarray}
+
+Now, we can solve both equations for $v_{i + 1}$ and equate them to solve for $x_{i + 1}$.
+
+\begin{eqnarray}
+    x_i =& x_{i + 1} - hv_{i + 1} \\
+    v_{i + 1} =& \frac{x_{i + 1} - x_i}{h} \\
+    v_i =& hx_{i + 1} + v_{i + 1} \\
+    v_{i + 1} =& v_i - hx_{i + 1} \\
+    v_i - hx_{i + 1} =& \frac{x_{i + 1} - x_i}{h}
+\end{eqnarray}
+
+Now, we can solve for $x_{i + 1}$ and $v_i={i + 1}$ to find
+
+\begin{eqnarray}
+    x_{i + 1} =& \frac{h v_i + x_i}{1 + h^2} \\
+    v_{i + 1} =& \frac{v_i - hx_i}{1 + h^2}
+\end{eqnarray}
+
+Now, using these formulae as a basis, we wrote a \texttt{python} function which used the implicit Euler's method to approximate the motion of a spring.  
+
+The graph of this method versus time is shown in Figure~\ref{fig:imp_num_spring}.  From this graph, we see that, unlike in the explicit method, the amplitude starts at the same value as the analytical method and \textit{decreases} with time. Thus, the error will increase over time, but the cycles will damp out to zero instead of blowing up to infinity.  
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.8\textwidth]{xv_imp_0_1_20.png}{}
+    \caption{Plot of the implicitly calculated $x(t)$ and $v(t)$ versus time.  Over time, it appears that the amplitude of the functions decrease. For the sake of generating these plots, we allowed $x_0 = 0$, $v_0 = 1$, $h = 0.1$, and $t_{max} = 20$.}
+    \label{fig:imp_num_spring}
+\end{figure}
+
+The global error of the implicit Euler's method, graphed against $t$, is shown in Figure~\ref{fig:err_imp}.  The error increases with time, similar to how it does for the explicit Euler's method.  However, for larger values of $t$, the total error amplitude eventually stops decreasing, as the approximation's amplitude has been reduced to zero.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.8\textwidth]{er_imp_0_1_100.png}{}
+    \caption{Plot of the calculated error of the explicit Euler's method against the analytical derivations for the spring's motion.  The implicit method's error graph resembles that of the explicit method's for low values of $t$, but the error flattens out once the implicit graph flattens out to one with zero amplitude.  For the sake of generating these plots, we allowed $x_0 = 0$, $v_0 = 1$, $h = 0.1$, and $t_{max} = 100$.}
+    \label{fig:err_imp}
+\end{figure}
+
+Following this logical trend, the energy function of the implicit Euler's method reduces to $0$ as $t$ increases while the analytical method's $E$ remains constant.  This is shown in Figure~\ref{fig:imp_energy}.  
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.7\textwidth]{en_imp_0_1_20.png}{}
+    \caption{Plot of the calculated $E = x^x + v^2$ of the implicit Euler's method versus the actual analytical $E$ value with time.  Over time, the energy associated with the Euler approximation damps to zero while the analytically derived energy remains constant.  For the sake of generating these plots, we allowed $x_0 = 0$, $v_0 = 1$, $h = 0.1$, and $t_{max} = 100$.}
+    \label{fig:imp_energy}
+\end{figure}
+
+\section{The Phase-space Geometry of the Explicit and Implicit Euler Methods}
+
+The motion of a spring can be described as a Hamiltonian system.  We can investigate the behavior of the spring's analytical motion versus Euler's derived spring behaviors in phase space, which is merely the ($x$, $v$) plane.  For an actual spring, the solutions of the equation of motion should resemble a circle defined by $x^2 + v^2 = E$.  Thus, accurate solutions in phase space should trace out closed circles.
+
+However, the explicit Euler's method calculations, as shown in Figure~\ref{fig:exp_pspace}, do not form a closed curve in phase space.  Instead, they start at a point on the analytic ($x$, $v$) curve at $t = 0$ and then form an open spiral outwards from the analytic solution.  The total radius of the circle increases at an increasing rate as $t$ increases without cessation.  This is predictable given how we know that the explicit method's energy increases exponentially with time (as shown in Figure~\ref{fig:exp_energy}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.7\textwidth]{ph_exp_0_1_20.png}{}
+    \caption{Plot of the explicitly calculated $x(t)$ against $v(t)$ to reveal the phase-space of the explicit Euler's method.  The analytic solution's phase space, which resembles a circle, is plotted as a reference.  From this plot, we can see that, as $t$ increases, the explicit solution spirals outward in a loop that increases in radius with time and never closes.  This is reflective of how the amplitude of both $x$ and $v$ increase with time for the explicit solution.  For the sake of generating these plots, we allowed $x_0 = 0$, $v_0 = 1$, $h = 0.1$, and $t_{max} = 20$.}
+    \label{fig:exp_pspace}
+\end{figure}
+
+The implicit calculations also do not form a closed curve in phase space.  Instead, they start at a point on the analytically derived ($x$, $v$) curve at $t = 0$ and then form an open spiral inwards toward the origin. The total radius of the circle decreases at a slowing rate as $t$ increases, approaching the origin asymptotically.  This is predictable given how we know that the explicit method's energy decreases asymptotically with time (as shown in Figure~\ref{fig:imp_energy}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.7\textwidth]{ph_imp_0_1_20.png}{}
+    \caption{Plot of the implicitly calculated $x(t)$ against $v(t)$ to reveal the phase-space of the implicit Euler's method.  The analytic solution's phase space, which resembles a circle, is plotted as a reference.  From this plot, we can see that, as $t$ increases, the implicit solution spirals inward in a loop that decreases in radius with time and will approach the $x = 0$, $v = 0$ point in the center.  This is reflective of how the amplitude of both $x$ and $v$ decrease with time for the implicit method.  For the sake of generating these plots, we allowed $x_0 = 0$, $v_0 = 1$, $h = 0.1$, and $t_{max} = 20$.}
+    \label{fig:imp_pspace}
+\end{figure}
+
+\section{The Symplectic Euler Method}
+
+One way to conserve the area of the phase-space numerical solution to the spring problem is to implement a different numerical integrator.  One such numerical integrator is a cross between the explicit and implicit Euler methods:
+
+\begin{equation}
+    x_{i + 1} = x_i + hv_i, ~v_{i + 1} = v_i - hx_{i + 1}
+\end{equation}
+
+This is known as the \textit{symplectic Euler method}.  A plot of the phase space of this method, compared to the other Euler methods, is shown in Figure~\ref{fig:sym_pspace}.  It is clear from the image that the symplectic method conserves the area of the circle in phase space while the other two numerical methods do not.  However, the symplectic method's solution resembles a tilted ellipse instead of a circle.  Thus, while it is very similar to the analytical solution in terms of amplitude, it does not necessarily conserve phase.  
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.7\textwidth]{ph_sym_0_1_20.png}{}
+    \caption{Plot of the symplectically calculated $x(t)$ against $v(t)$ to reveal the phase-space of the implicit Euler's method.  The analytic solution's phase space, which resembles a circle, is plotted as a reference.  From this plot, we can see that the symplectic solution strongly resembles the analytic solution, as it also has the form of a closed loop. The only meaningful difference is its slight tilt, implying a difference in phase.  This indicates that the symplectic Euler method's approximations for $x(t)$ and $v(t)$ oscillate with a constant amplitude over time.  For the sake of generating these plots, we allowed $x_0 = 0$, $v_0 = 1$, $h = 0.1$, and $t_{max} = 20$.}
+    \label{fig:sym_pspace}
+\end{figure}
+
+Figure~\ref{fig:sym_energy} shows explicitly how the symplectic method's energy evolves with time.  As expected from the phase-shift curve, the energy oscillates (in accordance with its phase difference from the analytic solution) but does not increase greatly in amplitude.  Thus, this method does a far better job of approximating the amplitude of a spring at any given point than the implicit and explicit methods do.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.8\textwidth]{en_sym_0_1_20.png}{}
+    \caption{Plot of the calculated $E = x^x + v^2$ of the symplectic Euler's method versus the actual analytical $E$ value with time.  Over time, the energy associated with the Euler approximation oscillates with a constant amplitude while the analytically derived energy remains constant.  Thus, over long periods of time, the symplectic Euler's method would be more accurate in terms of energy calculations than the implicit or explicit Euler's methods.  For the sake of generating these plots, we allowed $x_0 = 0$, $v_0 = 1$, $h = 0.1$, and $t_{max} = 20$.}
+    \label{fig:sym_energy}
+\end{figure}
+
+
+However, as shown in Figure~\ref{fig:phase_err}, this method is still flawed with regards to exact numerical simulations of the spring's motion.  When plotted against the equation of motion of the actual spring, the symplectic solution shows a difference in phase for large values of $t$.  Thus, we may conclude that the symplectic method is a poor approximation of the phase of the curve.  Thus, the implicit and explicit methods are more accurate with regards to phase, and the symplectic is more accurate with regards to amplitude.  Thus, when using numerical approximations, the user should decide which method to use by considering which properties they consider to be the most important.  
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.7\textwidth]{lp_sym_0_1_1000.png}{}
+    \caption{Plot of the calculated $x$ versus $t$ values of the symplectic method against time.  The analytical $x$ values with time have also been plotted for reference. Over time, the energy associated with the Euler approximation oscillates with a constant amplitude while the analytically derived energy remains constant.  However, for large values of $t$, the phase of the symplectic method starts to deviate from the phase of the analytical solution.  Thus, over long periods of time, the symplectic Euler's method becomes increasingly out of phase compared to the analytic solution.  For the sake of generating these plots, we allowed $x_0 = 0$, $v_0 = 1$, $h = 0.1$, and $t_{max} = 1000$.}
+    \label{fig:phase_err}
+\end{figure}
+
+\end{document}
