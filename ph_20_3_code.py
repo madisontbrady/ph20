@@ -452,5 +452,6 @@ if __name__ == "__main__":
             longper_xv_t_graph(h, x0, v0, Tmax, approx_type, filename)
 
     else:
-        print "usage: python ph_20_3_code.py [plot type] [approximation type] h x0 v0 Tmax [filename]"
+        print "usage: python ph_20_3_code.py [plot type] \
+        [approximation type] h x0 v0 Tmax [filename]"
         quit()

@@ -1,11 +1,19 @@
+# Makefile for Ph 20 Assignment 3.
+MAKE_TERMOUT = command.txt
+
 include config.mk
 
 .PHONY: all
-all : images ph20_3.pdf
+all : ph20_3.pdf
 
 # Compile pdf.
-%.pdf : %.tex images
-		pdflatex $*.tex
+%.pdf : images log.txt command.txt %.tex
+		pdflatex $*.tex -shell-escape
+		pdflatex $*.tex -shell-escape
+
+# Produce log.
+log.txt :
+		git log > $@
 
 # Generate plots.
 .PHONY : images
@@ -36,3 +44,4 @@ clean :
 		rm -f *.pdf
 		rm -f *.aux
 		rm -f *.log
+		rm -f *.txt

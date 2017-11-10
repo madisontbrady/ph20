@@ -4,6 +4,8 @@
 \usepackage{amsmath}
 \usepackage[margin=1in]{geometry} 
 \usepackage{amsmath,amsthm,amssymb,amsfonts}
+\usepackage{verbatim}
+\usepackage{minted}
  
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\Z}{\mathbb{Z}}
@@ -16,7 +18,7 @@
 
 \usepackage{subcaption}
  
-\title{Physics 20 Set 3}
+\title{Physics 20 Set 3 Lab}
 \author{Madison Brady}
 \date{October 2017}
 
@@ -302,5 +304,21 @@ However, as shown in Figure~\ref{fig:phase_err}, this method is still flawed wit
     \caption{Plot of the calculated $x$ versus $t$ values of the symplectic method against time.  The analytical $x$ values with time have also been plotted for reference. Over time, the energy associated with the Euler approximation oscillates with a constant amplitude while the analytically derived energy remains constant.  However, for large values of $t$, the phase of the symplectic method starts to deviate from the phase of the analytical solution.  Thus, over long periods of time, the symplectic Euler's method becomes increasingly out of phase compared to the analytic solution.  For the sake of generating these plots, we allowed $x_0 = 0$, $v_0 = 1$, $h = 0.1$, and $t_{max} = 1000$.}
     \label{fig:phase_err}
 \end{figure}
+
+\newpage
+\section{The Code}
+\inputminted{octave}{ph_20_3_code.py}
+
+\newpage
+\section{The Makefile}
+\inputminted{octave}{Makefile}
+
+\newpage
+\section{Version Log}
+\verbatiminput{log.txt}
+
+\newpage
+\section{Command Line}
+\verbatiminput{command.txt}
 
 \end{document}
